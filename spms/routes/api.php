@@ -2,10 +2,14 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\V1\Auth\AuthController;
 
 
 Route::prefix('v1/auth')->middleware('guest:sanctum')->group(function () {
-
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+    Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+    Route::post('/change-password', [AuthController::class, 'changePassword']);
 });
 
 Route::prefix('v1/profile')->middleware('auth:sanctum')->group(function () {
@@ -13,10 +17,10 @@ Route::prefix('v1/profile')->middleware('auth:sanctum')->group(function () {
 });
 
 Route::prefix('v1/admin')->middleware('auth:sanctum')->group(function () {
-
+    Route::post('/register', [AuthController::class, 'register']);
 });
 
-Route::prefix('v1/super-admin')->middleware('auth:sanctum')->group(function () {
+Route::prefix('v1/security')->middleware('auth:sanctum')->group(function () {
 
 });
 
