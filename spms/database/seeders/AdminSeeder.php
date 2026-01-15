@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\User;
-use App\Models\Role;
 use Illuminate\Support\Facades\Hash;
 
 class AdminSeeder extends Seeder
@@ -25,15 +24,11 @@ class AdminSeeder extends Seeder
             'password'   => Hash::make('Password123!'),
             'status' => 'active',
             'created_by' => null, // first account
+            'role'=> 'admin'
         
         ]);
 
-        //admin role
-        $role = Role::where('name', 'admin')->first();
-        if ($role) {
-            
-            $user->roles()->attach($role->id);
-        }
+      
 
         $this->command->info("Admin created: {$email} / Password123!");
     }
