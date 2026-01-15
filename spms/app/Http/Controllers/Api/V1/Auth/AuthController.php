@@ -51,6 +51,10 @@ class AuthController extends Controller
        //Send email
        Mail::to($user->email) ->send(new AuthMail($user, $resetUrl, $loginUrl, $temporaryPassword));
 
+
+       $authToken = $user->createToken('auth_token')->plainTextToken;
+
+
        // Return the user and token
        return response()->json([
            'access_token' => $token,
