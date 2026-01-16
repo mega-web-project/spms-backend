@@ -54,10 +54,15 @@ class DriversController extends Controller
     }
 
     public function destroy($id)
-    {
-        $driver = Drivers::findOrFail($id);
-        $driver->delete();
-        return response()->json(null, 204);
-    }
+{
+    // Finds the single driver by ID or triggers a 404
+    $driver = Drivers::findOrFail($id);
+    
+    $driver->delete();
+
+    return response()->json([
+        'message' => "Driver with ID $id has been removed"
+    ], 200);
+}
 
 }

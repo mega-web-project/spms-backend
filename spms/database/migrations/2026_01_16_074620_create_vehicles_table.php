@@ -16,10 +16,11 @@ return new class extends Migration
 
             // foriegn key to drivers table
             $table->foreignId('driver_id')
-                ->constrained('drivers')
+                ->nullable()
+                ->constrained()
                 ->cascadeOnDelete();
 
-            $table->string('image')->nullable();
+            $table->string('image')->nullable(); 
             $table->string('plate_number')->unique();
             $table->string('vehicle_type');
             $table->string('make');
