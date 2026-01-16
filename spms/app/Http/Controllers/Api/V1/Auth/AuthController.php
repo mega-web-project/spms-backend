@@ -165,4 +165,16 @@ class AuthController extends Controller
             'message' => 'Password changed successfully',
         ]);
     }
+
+        //function to get all users (for admin)
+    public function index()
+    {
+        //validate if the user is admin
+        $user = auth()->user();
+        if ($user->role !== 'admin') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+        $users = User::all();
+        return response()->json($users);
+    }
 }
