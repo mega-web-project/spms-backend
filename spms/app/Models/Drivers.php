@@ -9,7 +9,7 @@ use App\Models\Vehicles;
 class Drivers extends Model
 {
     //
-
+    use HasFactory;
     protected $fillable = [
         'full_name',
         'company',
@@ -17,4 +17,9 @@ class Drivers extends Model
         'license_number',
         'address',
     ];
+
+    public function vehicle()
+    {
+        return $this->hasOne(Vehicles::class, 'driver_id');
+    }
 }

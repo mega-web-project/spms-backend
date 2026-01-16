@@ -6,6 +6,10 @@ use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Api\V1\Admin\VisitorController;
 use App\Http\Controllers\Api\V1\Admin\VehiclesController;
 use App\Http\Controllers\Api\V1\Admin\DriversController;
+use App\Http\Controllers\Api\V1\Security\CheckInController;
+use App\Http\Controllers\Api\V1\Admin\GoodsItemController;
+use App\Http\Controllers\Api\V1\Admin\VisitController;
+use App\Http\Controllers\Api\V1\Security\CheckOutController;
 
 
 Route::prefix('v1/auth')->middleware('guest:sanctum')->group(function () {
@@ -49,6 +53,10 @@ Route::prefix('v1/admin')->middleware('auth:sanctum')->group(function () {
 });
 
 Route::prefix('v1/security')->middleware('auth:sanctum')->group(function () {
+    Route::post('/check-in', [CheckInController::class, 'store']);
+    Route::post('/check-out/{visit_id}', [CheckOutController::class, 'store']);
+    Route::put('/check-out/{visit_id}', [CheckOutController::class, 'update']);
+    
 
 });
 
