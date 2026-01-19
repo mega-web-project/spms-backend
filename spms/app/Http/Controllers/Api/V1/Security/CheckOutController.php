@@ -1,5 +1,11 @@
 <?php
 
+namespace App\Http\Controllers\Api\V1\Security;
+use App\Models\Visit;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+
+
 class CheckOutController extends Controller
 {
     public function update(Request $request, $id)
@@ -22,6 +28,9 @@ class CheckOutController extends Controller
             'check_out_at' => now(),
             'status' => 'completed'
         ]);
+
+
+        
 
         return response()->json(['message' => 'Vehicle checked out successfully']);
     }
