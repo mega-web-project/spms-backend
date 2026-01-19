@@ -37,7 +37,7 @@ class VehiclesController extends Controller
     // Handle image upload
     if ($request->hasFile('image')) {
         $path = $request->file('image')->store('vehicles', 'public');
-        $validatedData['image'] = $path;
+         $validatedData['image'] = ltrim($path, '/');
     }
 
     $vehicle = Vehicles::create($validatedData);

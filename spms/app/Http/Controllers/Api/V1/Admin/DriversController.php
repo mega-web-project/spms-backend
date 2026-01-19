@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Events\RequestCreated;
+
 use App\Models\Drivers;
 
 class DriversController extends Controller
@@ -30,13 +30,13 @@ class DriversController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-                $path = $request->file('image')->store('vehicles', 'public');
-                $validatedData['image'] = $path;
+                $path = $request->file('image')->store('drivers', 'public');
+                 $validatedData['image'] = ltrim($path, '/');
             }
 
 
         $driver = Drivers::create($validatedData);
-        broadcast(new RequestCreated($driver))->toOthers();
+       
         return response()->json($driver, 201);
     }
 
