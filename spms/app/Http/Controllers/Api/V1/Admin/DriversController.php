@@ -24,9 +24,16 @@ class DriversController extends Controller
             'full_name' => 'required|string',
             'company' => 'nullable|string',
             'phone' => 'required|string|unique:drivers,phone',
-            'license_number' => 'required|string|unique:drivers,license_number',
+            'license_number' => 'nullable|string|unique:drivers,license_number',
             'address' => 'nullable|string',
+            'image'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
+
+        if ($request->hasFile('image')) {
+                $path = $request->file('image')->store('vehicles', 'public');
+                $validatedData['image'] = $path;
+            }
+
 
         $driver = Drivers::create($validatedData);
         broadcast(new RequestCreated($driver))->toOthers();
