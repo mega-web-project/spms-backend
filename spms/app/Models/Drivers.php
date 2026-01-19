@@ -10,16 +10,13 @@ class Drivers extends Model
 {
     //
     use HasFactory;
+    
     protected $fillable = [
+        'image',
         'full_name',
-        'company',
-        'phone',
         'license_number',
+        'phone',
+        'company',
         'address',
     ];
-
-    public function vehicle()
-    {
-        return $this->hasOne(Vehicles::class, 'driver_id');
-    }
 }

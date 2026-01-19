@@ -18,11 +18,11 @@ class VehiclesController extends Controller
 
 
 
-    //function to create a vhicle
+    //function to create a vehicle
     public function store(Request $request){
 
         $validatedData = $request->validate([
-            'driver_id' => 'required|exists:drivers,id',
+            'driver_id' => 'nullable|integer|exists:drivers,id',
             'image' => 'nullable|string',
             'plate_number' => 'required|string|unique:vehicles,plate_number',
             'vehicle_type' => 'required|string',
@@ -50,13 +50,13 @@ class VehiclesController extends Controller
         $vehicle = Vehicles::findOrFail($id);
 
         $validatedData = $request->validate([
-            'driver_id' => 'required|exists:drivers,id',
+            'driver_id' => 'nullable|integer|exists:drivers,id',
             'image' => 'nullable|string',
-            'plate_number' => 'required|string|unique:vehicles,plate_number,' . $id,
-            'vehicle_type' => 'required|string',
-            'make' => 'required|string',
-            'model' => 'required|string',
-            'color' => 'required|string',
+            'plate_number' => 'sometimes|required|string|unique:vehicles,plate_number,' . $id,
+            'vehicle_type' => 'sometimes|required|string',
+            'make' => 'sometimes|required|string',
+            'model' => 'sometimes|required|string',
+            'color' => 'sometimes|required|string',
             'company' => 'nullable|string',
         ]);
 
