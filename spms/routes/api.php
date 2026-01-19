@@ -17,6 +17,7 @@ Route::prefix('v1/auth')->middleware('guest:sanctum')->group(function () {
     Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
     Route::post('/reset-password', [AuthController::class, 'resetPassword']);
     Route::post('/change-password', [AuthController::class, 'changePassword']);
+    
 });
 
 Route::prefix('v1/profile')->middleware('auth:sanctum')->group(function () {
@@ -33,6 +34,8 @@ Route::prefix('v1/admin')->middleware('auth:sanctum')->group(function () {
     });
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/users', [AuthController::class, 'index']);
+    Route::post('/update', [AuthController::class, 'update']);
+    Route::post('/activate-or-deactivate/{id}', [AuthController::class, 'activateOrdeactivate']);
 
     Route::prefix('vehicles')->group(function () {
         Route::post('/', [VehiclesController::class, 'store']);
