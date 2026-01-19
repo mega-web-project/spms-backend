@@ -25,16 +25,18 @@ Route::prefix('v1/profile')->middleware('auth:sanctum')->group(function () {
 
 Route::prefix('v1/admin')->middleware('auth:sanctum')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
-    Route::prefix('visitors')->controller(VisitorController::class)->group(function () {
-        Route::get('/', 'index');
-        Route::post('/', 'store');
-        Route::post('/checkout/{id}', 'checkout');
-        Route::post('/checkin/{id}', 'checkin');
-    });
+    
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/users', [AuthController::class, 'index']);
     Route::put('/update/users/{id}', [AuthController::class, 'update']);
     Route::post('/activate-or-deactivate/{id}', [AuthController::class, 'activateOrdeactivate']);
+
+});
+
+Route::prefix('v1/security')->middleware('auth:sanctum')->group(function () {
+    Route::post('/check-in', [CheckInController::class, 'store']);
+    Route::post('/check-out/{visit_id}', [CheckOutController::class, 'store']);
+    Route::put('/check-out/{visit_id}', [CheckOutController::class, 'update']);
 
     Route::prefix('vehicles')->group(function () {
         Route::post('/', [VehiclesController::class, 'store']);
@@ -52,12 +54,12 @@ Route::prefix('v1/admin')->middleware('auth:sanctum')->group(function () {
         Route::delete('/{id}', [DriversController::class, 'destroy']);
     });
 
-});
-
-Route::prefix('v1/security')->middleware('auth:sanctum')->group(function () {
-    Route::post('/check-in', [CheckInController::class, 'store']);
-    Route::post('/check-out/{visit_id}', [CheckOutController::class, 'store']);
-    Route::put('/check-out/{visit_id}', [CheckOutController::class, 'update']);
+    Route::prefix('visitors')->controller(VisitorController::class)->group(function () {
+        Route::get('/', 'index');
+        Route::post('/', 'store');
+        Route::post('/checkout/{id}', 'checkout');
+        Route::post('/checkin/{id}', 'checkin');
+    });
     
 
 });
