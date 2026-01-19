@@ -10,7 +10,7 @@ use App\Http\Controllers\Api\V1\Security\CheckInController;
 use App\Http\Controllers\Api\V1\Admin\GoodsItemController;
 use App\Http\Controllers\Api\V1\Admin\VisitController;
 use App\Http\Controllers\Api\V1\Security\CheckOutController;
-
+use App\Http\Controllers\TestController;
 
 Route::prefix('v1/auth')->middleware('guest:sanctum')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
@@ -33,7 +33,7 @@ Route::prefix('v1/admin')->middleware('auth:sanctum')->group(function () {
     });
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/users', [AuthController::class, 'index']);
-    Route::post('/update', [AuthController::class, 'update']);
+    Route::put('/update/users/{id}', [AuthController::class, 'update']);
     Route::post('/activate-or-deactivate/{id}', [AuthController::class, 'activateOrdeactivate']);
 
     Route::prefix('vehicles')->group(function () {
@@ -68,3 +68,5 @@ Route::prefix('v1/warehouse')->middleware('auth:sanctum')->group(function () {
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
+
+Route::post('/test-request', [TestController::class, 'store']);

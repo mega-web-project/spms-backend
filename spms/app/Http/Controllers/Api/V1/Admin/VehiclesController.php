@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Events\RequestCreated;
 use App\Models\Vehicles;
 use App\Models\Drivers;
+use Illuminate\Support\Facades\Storage;
 
 class VehiclesController extends Controller
 {
@@ -20,8 +21,8 @@ class VehiclesController extends Controller
 
 
     //function to create a vehicle
-    public function store(Request $request){
-
+      public function store(Request $request)
+      {
         $validatedData = $request->validate([
             'driver_id' => 'nullable|integer|exists:drivers,id',
             'image' => 'nullable|string',
@@ -37,6 +38,7 @@ class VehiclesController extends Controller
         broadcast(new RequestCreated($vehicle))->toOthers();
         return response()->json($vehicle, 201);
     }
+
 
 
 

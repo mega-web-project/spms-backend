@@ -1,10 +1,10 @@
 <?php
 
 namespace App\Http\Controllers\Api\V1\Security;
-use App\Models\Visit;
+
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
+use App\Models\Visit;
 
 class CheckOutController extends Controller
 {
@@ -19,12 +19,11 @@ class CheckOutController extends Controller
             'notes' => 'nullable|string'
         ]);
 
-        // Update the visit with check-out details
         $visit->update([
             'goods_verified' => $validated['goods_verified'],
             'weight_checked' => $validated['weight_checked'],
             'photo_documented' => $validated['photo_documented'],
-            'notes' => $validated['notes'],
+            'notes' => $validated['notes'] ?? null,
             'check_out_at' => now(),
             'status' => 'completed'
         ]);

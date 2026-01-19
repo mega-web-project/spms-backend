@@ -179,22 +179,39 @@ class AuthController extends Controller
         return response()->json($users);
     }
 
-    public function update(){
-        //code to update user details
-        $user = auth()->user();
-        $validated = request()->validate([
-            'full_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'sometimes|string|min:8',
-            'status' => 'sometimes|string',
+public function update(Request $request, $id)
+{
+    // Find user
+    $user = User::findOrFail($id);
 
-        ]);
+    // Validate request
+    $validated = $request->validate([
+        'full_name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email,' . $user->id,
+        'password' => 'sometimes|string|min:8',
+         'role'=>'sometimes:string',
+        'status' => 'sometimes|string',
+    ]);
 
-        $user->update($validated);
-
-        broadcast(new RequestCreated($user))->toOthers();
-        return response()->json($user);
+    // Hash password if provided
+    if (!empty($validated['password'])) {
+        $validated['password'] = Hash::make($validated['password']);
+    } else {
+        unset($validated['password']);
     }
+
+    // Update user
+    $user->update($validated);
+
+    // 🔥 Broadcasting is NOT optional
+    broadcast(new RequestCreated($user))->toOthers();
+
+    return response()->json([
+        'message' => 'User updated successfully',
+        'user' => $user
+    ], 200);
+}
+
 
     public function activateOrdeactivate($id){
         
