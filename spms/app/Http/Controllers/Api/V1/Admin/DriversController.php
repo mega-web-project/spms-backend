@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Events\RequestCreated;
 use App\Models\Drivers;
 
 class DriversController extends Controller
@@ -28,6 +29,7 @@ class DriversController extends Controller
         ]);
 
         $driver = Drivers::create($validatedData);
+        broadcast(new RequestCreated($driver))->toOthers();
         return response()->json($driver, 201);
     }
 
@@ -50,6 +52,7 @@ class DriversController extends Controller
         ]);
 
         $driver->update($validatedData);
+        broadcast(new RequestCreated($driver))->toOthers();
         return response()->json($driver, 200);
     }
 

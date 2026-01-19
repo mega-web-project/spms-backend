@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Events\RequestCreated;
 use App\Models\Vehicles;
 use App\Models\Drivers;
 use Illuminate\Support\Facades\Storage;
@@ -33,10 +34,27 @@ class VehiclesController extends Controller
         'company'       => 'nullable|string',
     ]);
 
+<<<<<<< HEAD
     // Handle image upload
     if ($request->hasFile('image')) {
         $path = $request->file('image')->store('vehicles', 'public');
         $validatedData['image'] = $path;
+=======
+        $validatedData = $request->validate([
+            'driver_id' => 'nullable|integer|exists:drivers,id',
+            'image' => 'nullable|string',
+            'plate_number' => 'required|string|unique:vehicles,plate_number',
+            'vehicle_type' => 'required|string',
+            'make' => 'required|string',
+            'model' => 'required|string',
+            'color' => 'required|string',
+            'company' => 'nullable|string',
+        ]);
+
+        $vehicle = Vehicles::create($validatedData);
+        broadcast(new RequestCreated($vehicle))->toOthers();
+        return response()->json($vehicle, 201);
+>>>>>>> dd9f4b08f8219574374061b66766d45d9cf98fbe
     }
 
     $vehicle = Vehicles::create($validatedData);
@@ -72,6 +90,7 @@ class VehiclesController extends Controller
         ]);
 
         $vehicle->update($validatedData);
+        broadcast(new RequestCreated($vehicle))->toOthers();
         return response()->json($vehicle, 200);
     }
 
