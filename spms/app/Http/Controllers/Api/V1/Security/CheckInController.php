@@ -1,12 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1\Admin;
+namespace App\Http\Controllers\Api\V1\Security;
 
 use App\Http\Controllers\Controller;
 use App\Models\Visit;
 use App\Models\GoodsItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
+
 
 class CheckInController extends Controller
 {
@@ -18,14 +20,15 @@ class CheckInController extends Controller
             'driver_id' => 'required|exists:drivers,id',
             'purpose' => 'required|string',
             'assigned_bay' => 'nullable|string',
-            'goods' => 'array', // From Step 3: Goods Declaration
-            'goods.*.item_name' => 'required|string',
-            'goods.*.quantity' => 'required|integer',
-            'reference_document' => 'nullable|string'
+            'goods_items' => 'array', // From Step 3: Goods Declaration
+            'goods_items.*.description' => 'required|string',
+            'goods_items.*.quantity' => 'required|integer',
+            'goods_items.*.reference_doc' => 'nullable|string',
+            'goods_items.*.unit' => 'nullable|string'
         ]);
 
         // 2. Use a Transaction to ensure everything saves correctly
-        return DB::transaction(function () use ($validated) {
+        return DB::transaction(function () use ($validated, $request) {
             
             // Create the Visit record
             $visit = Visit::create([
@@ -37,11 +40,15 @@ class CheckInController extends Controller
             ]);
 
             // Save the Goods Items
-            foreach ($validated['goods'] as $item) {
-                $visit->goodsItems()->create([
-                    'item_name' => $item['item_name'],
+
+            $items = $request->input('goods_items', []);
+
+            foreach ($items as $item) {
+                $visit->goods_items()->create([
+                    'description' => $item['description'],
                     'quantity' => $item['quantity'],
-                    'reference_doc' => $validated['reference_document']
+                    'unit' => $item['unit'] ?? 'pcs',
+                    'reference_doc' => $item['reference_doc'] ?? null
                 ]);
             }
 

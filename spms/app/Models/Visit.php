@@ -20,7 +20,7 @@ class Visit extends Model
         'notes',
     ];
 
-    public function goodsItems()
+    public function goods_items()
     {
         return $this->hasMany(GoodsItem::class, 'visit_id');
     }
