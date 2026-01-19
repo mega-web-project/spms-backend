@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
+use App\Events\RequestCreated;
 
 class AuthController extends Controller
 {
@@ -184,13 +185,14 @@ class AuthController extends Controller
         $validated = request()->validate([
             'full_name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'nullable|string|min:8',
-            'status' => 'nullable|string',
+            'password' => 'sometimes|string|min:8',
+            'status' => 'sometimes|string',
 
         ]);
 
         $user->update($validated);
 
+        broadcast(new RequestCreated($user))->toOthers();
         return response()->json($user);
     }
 }
