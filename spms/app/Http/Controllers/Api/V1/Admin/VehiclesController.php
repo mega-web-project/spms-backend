@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Events\RequestCreated;
 use App\Models\Vehicles;
 use App\Models\Drivers;
 
@@ -33,6 +34,7 @@ class VehiclesController extends Controller
         ]);
 
         $vehicle = Vehicles::create($validatedData);
+        broadcast(new RequestCreated($vehicle))->toOthers();
         return response()->json($vehicle, 201);
     }
 
@@ -61,6 +63,7 @@ class VehiclesController extends Controller
         ]);
 
         $vehicle->update($validatedData);
+        broadcast(new RequestCreated($vehicle))->toOthers();
         return response()->json($vehicle, 200);
     }
 

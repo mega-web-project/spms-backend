@@ -197,7 +197,7 @@ class AuthController extends Controller
     }
 
     public function activateOrdeactivate($id){
-        //code to activate or deactivate user
+        
         $user = User::find($id);
         if(!$user){
             return response()->json(['message' => 'User not found'], 404);
