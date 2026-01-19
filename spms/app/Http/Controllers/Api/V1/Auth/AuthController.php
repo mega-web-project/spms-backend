@@ -177,4 +177,20 @@ class AuthController extends Controller
         $users = User::all();
         return response()->json($users);
     }
+
+    public function update(){
+        //code to update user details
+        $user = auth()->user();
+        $validated = request()->validate([
+            'full_name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'nullable|string|min:8',
+            'status' => 'nullable|string',
+
+        ]);
+
+        $user->update($validated);
+
+        return response()->json($user);
+    }
 }
