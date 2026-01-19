@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Api\V1\Security;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Visit;
+use App\Models\GoodsItem;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class CheckOutController extends Controller
 {
