@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Vehicles;
 use App\Models\Drivers;
+use Illuminate\Support\Facades\Storage;
 
 class VehiclesController extends Controller
 {
@@ -19,22 +20,32 @@ class VehiclesController extends Controller
 
 
     //function to create a vehicle
-    public function store(Request $request){
+      public function store(Request $request)
+{
+    $validatedData = $request->validate([
+        'driver_id'     => 'nullable|integer|exists:drivers,id',
+        'image'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        'plate_number'  => 'required|string|unique:vehicles,plate_number',
+        'vehicle_type'  => 'required|string',
+        'make'          => 'required|string',
+        'model'         => 'required|string',
+        'color'         => 'required|string',
+        'company'       => 'nullable|string',
+    ]);
 
-        $validatedData = $request->validate([
-            'driver_id' => 'nullable|integer|exists:drivers,id',
-            'image' => 'nullable|string',
-            'plate_number' => 'required|string|unique:vehicles,plate_number',
-            'vehicle_type' => 'required|string',
-            'make' => 'required|string',
-            'model' => 'required|string',
-            'color' => 'required|string',
-            'company' => 'nullable|string',
-        ]);
-
-        $vehicle = Vehicles::create($validatedData);
-        return response()->json($vehicle, 201);
+    // Handle image upload
+    if ($request->hasFile('image')) {
+        $path = $request->file('image')->store('vehicles', 'public');
+        $validatedData['image'] = $path;
     }
+
+    $vehicle = Vehicles::create($validatedData);
+
+    return response()->json([
+        'message' => 'Vehicle created successfully',
+        'vehicle' => $vehicle,
+    ], 201);
+}
 
 
 
