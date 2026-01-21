@@ -17,14 +17,14 @@ return new class extends Migration
             $table->string('ID_number')->unique();
             $table->string('phone_number');
             $table->string('company')->nullable();
-            $table->string('purpose_of_visit');
-            $table->string('person_to_visit');
-            $table->string('department')->nullable();
-            $table->string('additional_notes')->nullable();
-            $table->string('status')->default('checked_in');
-             $table->timestamp('check_in_time')->nullable();
-            $table->timestamp('check_out_time')->nullable();
-            $table->timestamps();
+            // $table->string('purpose_of_visit');
+            // $table->string('person_to_visit');
+            // $table->string('department')->nullable();
+            // $table->string('additional_notes')->nullable();
+            // $table->string('status')->default('checked_in');
+            // $table->timestamp('check_in_time')->nullable();
+            $table->timestamp('checked_out_time')->nullable();
+             $table->timestamps();
         });
     }
 

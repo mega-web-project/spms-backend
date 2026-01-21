@@ -7,18 +7,43 @@ use Illuminate\Database\Eloquent\Model;
 class Visit extends Model
 {
     protected $fillable = [
+        'visit_type',
+
+        'visitor_id',
         'vehicle_id',
         'driver_id',
-        'purpose',
+
+        //vehicle info
         'assigned_bay',
+
+        //visitor info
+        'person_to_visit',
+        'department',
+        'additional_notes',
+
+        //common
+        'purpose',
+        'checked_in_at',
+        'checked_out_at',
         'status',
-        'check_in_at',
-        'check_out_at',
+        'has_discrepancies',
+
+        // Check-out Verification
         'goods_verified',
         'weight_checked',
         'photo_documented',
         'notes',
     ];
+
+    protected $casts=[
+        'checked_in_at' => 'datetime',
+        'checked_out_at' => 'datetime',
+    ];
+
+    public function visitor()
+    {
+        return $this->belongsTo(Visitors::class, 'visitor_id');
+    }
 
     public function goods_items()
     {

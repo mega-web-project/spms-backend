@@ -35,8 +35,9 @@ Route::prefix('v1/admin')->middleware('auth:sanctum')->group(function () {
 
 Route::prefix('v1/security')->middleware('auth:sanctum')->group(function () {
     Route::post('/check-in', [CheckInController::class, 'store']);
-    Route::post('/check-out/{visit_id}', [CheckOutController::class, 'store']);
-    Route::put('/check-out/{visit_id}', [CheckOutController::class, 'update']);
+    Route::post('/check-out', [CheckOutController::class, 'checkout']);
+    Route::get('/check-out/history', [CheckOutController::class, 'history']);
+
 
     Route::prefix('vehicles')->group(function () {
         Route::post('/', [VehiclesController::class, 'store']);
@@ -57,16 +58,12 @@ Route::prefix('v1/security')->middleware('auth:sanctum')->group(function () {
     Route::prefix('visitors')->controller(VisitorController::class)->group(function () {
         Route::get('/', 'index');
         Route::post('/', 'store');
-        Route::post('/checkout/{id}', 'checkout');
-        Route::post('/checkin/{id}', 'checkin');
     });
     
 
 });
 
-Route::prefix('v1/warehouse')->middleware('auth:sanctum')->group(function () {
 
-});
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');

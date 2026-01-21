@@ -17,8 +17,8 @@ class TestController extends Controller
     $newRequest = Request::create($data);
 
     // Broadcast the event
-    broadcast(new RequestCreated($newRequest))->toOthers();
-
+    
+broadcast(new RequestCreated($newRequest))->toOthers();
     return response()->json($newRequest, 201);
 }
 }
