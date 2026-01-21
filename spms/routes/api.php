@@ -7,9 +7,9 @@ use App\Http\Controllers\Api\V1\Admin\VisitorController;
 use App\Http\Controllers\Api\V1\Admin\VehiclesController;
 use App\Http\Controllers\Api\V1\Admin\DriversController;
 use App\Http\Controllers\Api\V1\Security\CheckInController;
-use App\Http\Controllers\Api\V1\Admin\GoodsItemController;
 use App\Http\Controllers\Api\V1\Admin\VisitController;
 use App\Http\Controllers\Api\V1\Security\CheckOutController;
+use App\Http\Controllers\Api\V1\Security\ReportController;
 use App\Http\Controllers\TestController;
 
 Route::prefix('v1/auth')->middleware('guest:sanctum')->group(function () {
@@ -59,7 +59,10 @@ Route::prefix('v1/security')->middleware('auth:sanctum')->group(function () {
         Route::get('/', 'index');
         Route::post('/', 'store');
     });
-    
+
+    Route::prefix('reports')->controller(ReportController::class)->group(function () {
+        Route::get('/statistics', 'getStatistics');
+    });
 
 });
 
