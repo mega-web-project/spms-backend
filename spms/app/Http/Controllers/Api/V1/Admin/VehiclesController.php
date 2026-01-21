@@ -63,7 +63,7 @@ class VehiclesController extends Controller
 
         $validatedData = $request->validate([
             'driver_id' => 'nullable|integer|exists:drivers,id',
-            'image' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'plate_number' => 'sometimes|required|string|unique:vehicles,plate_number,' . $id,
             'vehicle_type' => 'sometimes|required|string',
             'make' => 'sometimes|required|string',
@@ -71,6 +71,15 @@ class VehiclesController extends Controller
             'color' => 'sometimes|required|string',
             'company' => 'nullable|string',
         ]);
+
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($vehicle->image) {
+                Storage::disk('public')->delete($vehicle->image);
+            }
+            $path = $request->file('image')->store('vehicles', 'public');
+            $validatedData['image'] = $path;
+        }
 
         $vehicle->update($validatedData);
         broadcast(new RequestCreated($vehicle))->toOthers();

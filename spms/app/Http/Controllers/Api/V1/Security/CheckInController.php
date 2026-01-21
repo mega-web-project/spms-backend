@@ -4,58 +4,57 @@ namespace App\Http\Controllers\Api\V1\Security;
 
 use App\Http\Controllers\Controller;
 use App\Models\Visit;
-use App\Models\GoodsItem;
 use Illuminate\Http\Request;
+use App\Events\RequestCreated;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
-
+use App\Http\Resources\VisitResource;
 
 class CheckInController extends Controller
 {
     public function store(Request $request)
     {
-        // 1. Validate the combined data from all 4 steps
         $validated = $request->validate([
-            'vehicle_id' => 'required|exists:vehicles,id',
-            'driver_id' => 'required|exists:drivers,id',
-            'purpose' => 'required|string',
+            'visit_type' => 'required|in:visitors,vehicles',
+
+            // visitor
+            'visitor_id' => 'required_if:visit_type,visitors|exists:visitors,id',
+            'purpose_of_visit' => 'nullable|string',
+            'person_to_visit' => 'nullable|string',
+            'department' => 'nullable|string',
+            'additional_notes' => 'nullable|string',
+
+            // vehicle
+            'vehicle_id' => 'required_if:visit_type,vehicles|exists:vehicles,id',
+            'driver_id' => 'required_if:visit_type,vehicles|exists:drivers,id',
+            'purpose' => 'nullable|string',
             'assigned_bay' => 'nullable|string',
-            'goods_items' => 'array', // From Step 3: Goods Declaration
-            'goods_items.*.description' => 'required|string',
-            'goods_items.*.quantity' => 'required|integer',
-            'goods_items.*.reference_doc' => 'nullable|string',
-            'goods_items.*.unit' => 'nullable|string'
         ]);
 
-        // 2. Use a Transaction to ensure everything saves correctly
-        return DB::transaction(function () use ($validated, $request) {
+        $visit = Visit::create([
+            'visit_type' => $validated['visit_type'],
+
+            'visitor_id' => $validated['visitor_id'] ?? null,
+            'vehicle_id' => $validated['vehicle_id'] ?? null,
+            'driver_id' => $validated['driver_id'] ?? null,
+
+            'purpose_of_visit' => $validated['purpose_of_visit'] ?? null,
+            'person_to_visit' => $validated['person_to_visit'] ?? null,
+            'department' => $validated['department'] ?? null,
+            'additional_notes' => $validated['additional_notes'] ?? null,
+
+            'purpose' => $validated['purpose'] ?? null,
+            'assigned_bay' => $validated['assigned_bay'] ?? null,
+
+            'checked_in_at' => now(),
+            'status' => 'checked_in'
+        ]);
+
+        broadcast(new RequestCreated($visit))->toOthers();
+
+        return response()->json([
+            'message' => 'Checked in successfully',
+            'visit' => new VisitResource($visit),
             
-            // Create the Visit record
-            $visit = Visit::create([
-                'vehicle_id' => $validated['vehicle_id'],
-                'driver_id' => $validated['driver_id'],
-                'purpose' => $validated['purpose'],
-                'assigned_bay' => $validated['assigned_bay'] ?? 'Auto-assign',
-                'status' => 'checked_in'
-            ]);
-
-            // Save the Goods Items
-
-            $items = $request->input('goods_items', []);
-
-            foreach ($items as $item) {
-                $visit->goods_items()->create([
-                    'description' => $item['description'],
-                    'quantity' => $item['quantity'],
-                    'unit' => $item['unit'] ?? 'pcs',
-                    'reference_doc' => $item['reference_doc'] ?? null
-                ]);
-            }
-
-            return response()->json([
-                'message' => 'Vehicle checked in successfully',
-                'visit_id' => $visit->id
-            ], 201);
-        });
+        ], 201);
     }
 }

@@ -12,17 +12,14 @@ class Visitors extends Model
         'ID_number',
         'phone_number',
         'company',
-        'purpose_of_visit',
-        'person_to_visit',
-        'department',
-        'additional_notes',
-        'status',
-        'check_in_time',
-        'check_out_time'
+        // 'purpose_of_visit',
+        // 'person_to_visit',
+        // 'department',
+        // 'additional_notes',
+        // 'status',
+        // 'check_in_time',
+        // 'check_out_time'
     ];
 
-    protected $casts = [
-        'check_in_time' => 'datetime',
-        'check_out_time' => 'datetime',
-    ];
+
 }

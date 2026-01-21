@@ -13,15 +13,27 @@ return new class extends Migration
     {
         Schema::create('visits', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('vehicle_id')->constrained();
-            $table->foreignId('driver_id')->constrained();
-            $table->string('purpose'); // Delivery, Pickup, etc.
+            $table->enum('visit_type',['visitors', 'vehicles'] )->nullable();
+            $table->foreignId('visitor_id')->nullable()->constrained();
+            $table->foreignId('vehicle_id')->nullable()->constrained();
+            $table->foreignId('driver_id')->nullable()->constrained();
+
+            //visitor specific
+            $table->string('person_to_visit')->nullable();
+            $table->string('department')->nullable();
+            $table->string('additional_notes')->nullable();
+
+            //vehicle info
             $table->string('assigned_bay')->nullable();
+
+            //common
+            $table->string('purpose');
             $table->string('status')->default('checked_in'); // checked_in, flagged, completed
-            $table->timestamp('check_in_at')->useCurrent();
-            $table->timestamp('check_out_at')->nullable();
+            $table->boolean('has_discrepancies')->default(false);
+            $table->timestamp('checked_in_at')->useCurrent();
+            $table->timestamp('checked_out_at')->nullable();
             
-            // Check-out Verification Fields (from your screenshot)
+            // Check-out Verification
             $table->boolean('goods_verified')->default(false);
             $table->boolean('weight_checked')->default(false);
             $table->boolean('photo_documented')->default(false);
