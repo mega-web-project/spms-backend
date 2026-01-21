@@ -41,7 +41,7 @@ class VehiclesController extends Controller
     }
 
     $vehicle = Vehicles::create($validatedData);
-    broadcast(new RequestCreated($vehicle))->toOthers();
+ 
     return response()->json($vehicle, 201);
     }
 

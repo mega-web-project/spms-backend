@@ -24,7 +24,7 @@ class DriversController extends Controller
             'full_name' => 'required|string',
             'company' => 'nullable|string',
             'phone' => 'required|string|unique:drivers,phone',
-            'license_number' => 'nullable|string|unique:drivers,license_number',
+            'license_number' => 'nullable|string',
             'address' => 'nullable|string',
             'image'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
@@ -54,7 +54,7 @@ class DriversController extends Controller
             'full_name' => 'sometimes|required|string',
             'company' => 'nullable|string',
             'phone' => 'sometimes|required|string|unique:drivers,phone,' . $id,
-            'license_number' => 'sometimes|required|string|unique:drivers,license_number,' . $id,
+            'license_number' => 'nullable|string,' . $id,
             'address' => 'nullable|string',
         ]);
 

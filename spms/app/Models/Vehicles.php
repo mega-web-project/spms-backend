@@ -32,4 +32,21 @@ class Vehicles extends Model
     {
         return $this->hasMany(Visit::class, 'vehicle_id');
     }
+
+        protected $appends = ['image_url'];
+
+    protected $hidden = ['image'];
+
+   public function getImageUrlAttribute()
+{
+    if (!$this->image) {
+        return null; // or return default avatar URL if you want
+    }
+
+    // Remove any leading slashes from stored path
+    $path = ltrim($this->image, '/');
+
+    // Build proper URL
+    return asset("storage/{$path}");
+}
 }
