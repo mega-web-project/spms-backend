@@ -4,13 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use App\Models\Vehicles;
 
 class Drivers extends Model
 {
-    //
     use HasFactory;
-    
+
     protected $fillable = [
         'image',
         'full_name',
@@ -19,4 +17,23 @@ class Drivers extends Model
         'company',
         'address',
     ];
+
+    // IMPORTANT: only append image_url, NOT image
+    protected $appends = ['image_url'];
+
+    protected $hidden = ['image'];
+
+   public function getImageUrlAttribute()
+{
+    if (!$this->image) {
+        return null; // or return default avatar URL if you want
+    }
+
+    // Remove any leading slashes from stored path
+    $path = ltrim($this->image, '/');
+
+    // Build proper URL
+    return asset("storage/{$path}");
+}
+
 }
