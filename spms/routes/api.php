@@ -2,15 +2,16 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TestController;
 use App\Http\Controllers\Api\V1\Auth\AuthController;
+use App\Http\Controllers\Api\V1\Admin\VisitController;
+use App\Http\Controllers\Api\V1\Admin\DriversController;
 use App\Http\Controllers\Api\V1\Admin\VisitorController;
 use App\Http\Controllers\Api\V1\Admin\VehiclesController;
-use App\Http\Controllers\Api\V1\Admin\DriversController;
-use App\Http\Controllers\Api\V1\Security\CheckInController;
-use App\Http\Controllers\Api\V1\Admin\VisitController;
-use App\Http\Controllers\Api\V1\Security\CheckOutController;
 use App\Http\Controllers\Api\V1\Security\ReportController;
-use App\Http\Controllers\TestController;
+use App\Http\Controllers\Api\V1\Security\CheckInController;
+use App\Http\Controllers\Api\V1\Security\CheckOutController;
+use App\Http\Controllers\Api\V1\Security\GoodsTrackingController;
 
 Route::prefix('v1/auth')->middleware('guest:sanctum')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
@@ -64,7 +65,12 @@ Route::prefix('v1/security')->middleware('auth:sanctum')->group(function () {
         Route::get('/statistics', 'getStatistics');
     });
 
-});
+    Route::get('goods', [GoodsTrackingController::class, 'index']);
+        Route::post('goods', [GoodsTrackingController::class, 'store']);
+        Route::get('goods/{id}', [GoodsTrackingController::class, 'show']);
+        Route::post('goods/verify', [GoodsTrackingController::class, 'verify']);
+        Route::delete('goods/items/{id}', [GoodsTrackingController::class, 'destroyItem']);
+    });
 
 
 Route::get('/user', function (Request $request) {
