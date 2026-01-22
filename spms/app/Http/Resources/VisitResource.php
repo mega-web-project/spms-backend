@@ -32,6 +32,11 @@ class VisitResource extends JsonResource
             $this->has_discrepancies
         ),
 
+        'goods_verified' => $this->when(
+            $this->visit_type === 'vehicles',
+            $this->goods_verified
+        ),
+
             'driver_id' => $this->when(
             $this->visit_type === 'vehicles',
             $this->driver_id
