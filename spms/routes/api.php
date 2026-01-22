@@ -9,9 +9,10 @@ use App\Http\Controllers\Api\V1\Admin\DriversController;
 use App\Http\Controllers\Api\V1\Admin\VisitorController;
 use App\Http\Controllers\Api\V1\Admin\VehiclesController;
 use App\Http\Controllers\Api\V1\Security\ReportController;
-use App\Http\Controllers\Api\V1\Security\CheckInController;
-use App\Http\Controllers\Api\V1\Security\CheckOutController;
 use App\Http\Controllers\Api\V1\Security\GoodsTrackingController;
+use App\Http\Controllers\Api\V1\Security\VisitorCheckController;
+use App\Http\Controllers\Api\V1\Security\VehicleCheckController;
+use App\Http\Controllers\Api\V1\Security\CheckOutHistoryController;
 
 Route::prefix('v1/auth')->middleware('guest:sanctum')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
@@ -35,18 +36,22 @@ Route::prefix('v1/admin')->middleware('auth:sanctum')->group(function () {
 });
 
 Route::prefix('v1/security')->middleware('auth:sanctum')->group(function () {
-    Route::post('/check-in', [CheckInController::class, 'store']);
-    Route::post('/check-out', [CheckOutController::class, 'checkout']);
-    Route::get('/check-out/history', [CheckOutController::class, 'history']);
-
-
+    Route::prefix('visitors')->group(function () {
+        Route::post('/check-in', [VisitorCheckController::class, 'checkIn']);
+        Route::post('/check-out/{visitId}', [VisitorCheckController::class, 'checkOut']);
+        Route::get('/getchecked', [VisitorCheckController::class, 'getCheckedInVisitors']);
+        
+    });
     Route::prefix('vehicles')->group(function () {
+        Route::post('/check-in', [VehicleCheckController::class, 'checkIn']);
+        Route::post('/check-out', [VehicleCheckController::class, 'checkOut']);
         Route::post('/', [VehiclesController::class, 'store']);
         Route::get('/', [VehiclesController::class, 'index']);
         Route::get('/{id}', [VehiclesController::class, 'show']);
         Route::put('/{id}', [VehiclesController::class, 'update']);
         Route::delete('/{id}', [VehiclesController::class, 'destroy']);
     });
+    Route::get('/check-out/history', [CheckOutHistoryController::class, 'history']);
 
     Route::prefix('drivers')->group(function () {
         Route::post('/', [DriversController::class, 'store']);
