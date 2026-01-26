@@ -44,7 +44,8 @@ Route::prefix('v1/security')->middleware('auth:sanctum')->group(function () {
     });
     Route::prefix('vehicles')->group(function () {
         Route::post('/check-in', [VehicleCheckController::class, 'checkIn']);
-        Route::post('/check-out', [VehicleCheckController::class, 'checkOut']);
+        Route::post('/check-out/{visitId}', [VehicleCheckController::class, 'checkOut']);
+        Route::get('/getchecked', [VehicleCheckController::class, 'getCheckedInVehicles']);
         Route::post('/', [VehiclesController::class, 'store']);
         Route::get('/', [VehiclesController::class, 'index']);
         Route::get('/{id}', [VehiclesController::class, 'show']);
