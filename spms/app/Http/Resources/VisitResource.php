@@ -15,6 +15,7 @@ class VisitResource extends JsonResource
             'status' => $this->status,
             'checked_in_at' => $this->checked_in_at,
             'checked_out_at' => $this->checked_out_at,
+            'vehicle' => $this->whenLoaded('vehicle'),
 
             // visitor
             'visitor_id' => $this->when(

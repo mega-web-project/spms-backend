@@ -21,6 +21,7 @@ class VehicleCheckController extends Controller
         $validated = $request->validate([
             // vehicle
             'vehicle_id' => 'nullable|exists:vehicles,id',
+            'image' => 'nullable|string|max:2048',
             'plate_number' => 'required_if:vehicle_id,null|string|unique:vehicles,plate_number',
             'vehicle_type' => 'required_if:vehicle_id,null|string',
             'make' => 'required_if:vehicle_id,null|string',
@@ -177,4 +178,32 @@ class VehicleCheckController extends Controller
             'visit' => new VisitResource($visit),
         ]);
     }
+
+    //function to getcheckedvehicles
+  public function getCheckedInVehicles()
+{
+    // Ensure we are eager loading 'vehicle' and 'driver' to avoid 'Unknown' labels
+    // We filter strictly by the 'checked_in' status
+    $visits = Visit::with(['vehicle', 'driver', 'goods_items'])
+        ->where('visit_type', 'vehicles')
+        ->where('status', 'checked_in') // Ensure this column contains 'checked_in', not 'checker'
+        ->get();
+
+    return response()->json([
+        'success' => true,
+        'checked_in_vehicles' => VisitResource::collection($visits),
+    ]);
+}
+
+public function getAllCheckinVehicles()
+{
+    $visits = Visit::with(['vehicle', 'driver', 'goods_items'])
+        ->where('visit_type', 'vehicles')
+        ->get();
+
+    return response()->json([
+        'success' => true,
+        'data' => VisitResource::collection($visits),
+    ]);
+}
 }

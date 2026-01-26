@@ -50,6 +50,8 @@ Route::prefix('v1/security')->middleware('auth:sanctum')->group(function () {
         Route::get('/{id}', [VehiclesController::class, 'show']);
         Route::put('/{id}', [VehiclesController::class, 'update']);
         Route::delete('/{id}', [VehiclesController::class, 'destroy']);
+        Route::get('/checker', [VehicleCheckController::class, 'getCheckedInVehicles']);
+        Route::get('/get/vehicles', [VehicleCheckController::class, 'getAllCheckinVehicles']);
     });
     Route::get('/check-out/history', [CheckOutHistoryController::class, 'history']);
 

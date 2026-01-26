@@ -20,6 +20,7 @@ class VisitResource extends JsonResource
             'additional_notes' => $this->additional_notes,
             'assigned_bay' => $this->assigned_bay,
             'checked_in_at' => $this->checked_in_at,
+            'plate_number' => $this->plate_number,
             'checked_out_at' => $this->checked_out_at,
             'status' => $this->status,
             'has_discrepancies' => $this->has_discrepancies,
