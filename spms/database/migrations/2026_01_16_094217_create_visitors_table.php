@@ -23,7 +23,7 @@ return new class extends Migration
             // $table->string('additional_notes')->nullable();
             // $table->string('status')->default('checked_in');
             // $table->timestamp('check_in_time')->nullable();
-            $table->timestamp('checked_out_time')->nullable();
+            // $table->timestamp('checked_out_time')->nullable();
              $table->timestamps();
         });
     }

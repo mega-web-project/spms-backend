@@ -36,4 +36,12 @@ class Drivers extends Model
     return asset("storage/{$path}");
 }
 
+public function vehicles(){
+    return $this->hasMany(Vehicle::class, 'driver_id');
+}
+
+public function visits(){
+    return $this->hasMany(Visit::class);
+}
+
 }
