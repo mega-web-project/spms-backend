@@ -20,20 +20,30 @@ class ReportController extends Controller
         $days = $request->query('days', 7); // default to last 7 days
         $startDate = Carbon::now()->subDays($days);
 
-        $totalVehicles = Vehicles::where('created_at', '>=', $startDate)->count();
-        $totalVisitors = Visitors::where('created_at', '>=', $startDate)->count();
+        $totalVehiclesOnsite = Visit::where('visit_type', 'vehicles')
+        ->where('status','checked_in')
+        ->whereNull('checked_out_at')
+        ->count();
+
+        $totalVisitorsOnSite = Visit::where('visit_type', 'visitors')
+        ->where('status', 'checked_in')
+        ->whereNull('checked_out_at')
+        ->count();
         $totalGoodsItems = GoodsItem::where('created_at', '>=', $startDate)->count();
-        $totalVisits = Visit::where('created_at', '>=', $startDate)->count();
+    
+        $pendingCheckouts = Visit::where('status', 'checked_in')
+        ->whereNull('checked_out_at')
+        ->count();
         //$totalAlerts = Alert::where('created_at', '>=', $startDate)->count();
         $totalCheckouts = Visit::where('checked_out_at', '>=', $startDate)->count();
 
         return response()->json([
-            'Vehicles In Period' => $totalVehicles,
-            'Visitors In Period' => $totalVisitors,
-            'Total Goods Items' => $totalGoodsItems,
-            'Total Visits' => $totalVisits,
+            'VehiclesInPeriod' => $totalVehiclesOnsite ,
+            'VisitorsInPeriod' => $totalVisitorsOnSite,
+            'TotalGoodsItems' => $totalGoodsItems,
+            'PendingCheckouts' => $pendingCheckouts,
             //'total_alerts' => $totalAlerts
-            'Total Checkouts' => $totalCheckouts
+            'TotalCheckouts' => $totalCheckouts
 
         ]);
     }

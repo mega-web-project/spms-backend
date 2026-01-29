@@ -3,6 +3,8 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 
 return new class extends Migration
 {
@@ -27,6 +29,7 @@ return new class extends Migration
             $table->string('model');
             $table->string('color');
             $table->string('company');
+             $table->softDeletes();
             $table->timestamps();
         });
     }

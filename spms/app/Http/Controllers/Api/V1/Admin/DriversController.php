@@ -51,9 +51,9 @@ class DriversController extends Controller
         $driver = Drivers::findOrFail($id);
 
         $validatedData = $request->validate([
-            'full_name' => 'sometimes|required|string',
+            'full_name' => 'sometimes|string',
             'company' => 'nullable|string',
-            'phone' => 'sometimes|required|string|unique:drivers,phone,' . $id,
+            'phone' => 'sometimes|string|unique:drivers,phone,' . $id,
             'license_number' => 'nullable|string,' . $id,
             'address' => 'nullable|string',
         ]);

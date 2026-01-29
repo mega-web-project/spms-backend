@@ -16,132 +16,280 @@ class VehicleCheckController extends Controller
     /**
      * VEHICLE CHECK-IN
      */
-    public function checkIn(Request $request)
-    {
-        $request->validate([
-            // Vehicle
-            'vehicle_id' => 'nullable|exists:vehicles,id',
-            'plate_number' => 'required|string',
-            'vehicle_type' => 'required|string',
-            'make' => 'required|string',
-            'model' => 'required|string',
-            'color' => 'required|string',
-            'vehicle_company' => 'nullable|string',
+    // public function checkIn(Request $request)
+    // {
+    //     $request->validate([
+    //         // Vehicle
+    //         'vehicle_id' => 'nullable|exists:vehicles,id',
+    //         'plate_number' => 'required|string',
+    //         'vehicle_type' => 'required|string',
+    //         'make' => 'string',
+    //         'model' => 'string',
+    //         'color' => 'string',
+    //         'vehicle_company' => 'nullable|string',
 
-            // Driver
-            'driver_id' => 'nullable|exists:drivers,id',
-            'driver_name' => 'required|string',
-            'driver_phone' => 'required|string',
-            'driver_company' => 'nullable|string',
-            'driver_license' => 'nullable|string',
+    //         // Driver
+    //         'driver_id' => 'nullable|exists:drivers,id',
+    //         'driver_name' => 'required|string',
+    //         'driver_phone' => 'required|string',
+    //         'driver_company' => 'nullable|string',
+    //         'driver_license' => 'nullable|string',
 
-            // Visit
-            'purpose' => 'nullable|string',
-            'assigned_bay' => 'nullable|string',
+    //         // Visit
+    //         'purpose' => 'nullable|string',
+    //         'assigned_bay' => 'nullable|string',
 
-            // Goods
-            'items' => 'nullable|array',
-            'items.*.description' => 'required_with:items|string',
-            'items.*.quantity' => 'required_with:items|integer|min:1',
-            'items.*.unit' => 'nullable|string|max:50',
-            'items.*.reference_doc' => 'nullable|string|max:255',
-        ]);
+    //         // Goods
+    //         'items' => 'nullable|array',
+    //         'items.*.description' => 'required_with:items|string',
+    //         'items.*.quantity' => 'required_with:items|integer|min:1',
+    //         'items.*.unit' => 'nullable|string|max:50',
+    //         'items.*.reference_doc' => 'nullable|string|max:255',
+    //     ]);
 
-        DB::beginTransaction();
+    //     DB::beginTransaction();
 
-        try {
-            // =========================
-            // DRIVER: check if exists by phone
-            // =========================
-            if (!empty($request->driver_id)) {
-                $driver = Drivers::findOrFail($request->driver_id);
-            } else {
-                $driver = Drivers::where('phone', $request->driver_phone)->first();
-                if (!$driver) {
-                    $driver = Drivers::create([
-                        'full_name' => $request->driver_name,
-                        'phone' => $request->driver_phone,
-                        'company' => $request->driver_company ?? null,
-                        'license_number' => $request->driver_license ?? null,
-                    ]);
-                }
+    //     try {
+    //         // =========================
+    //         // DRIVER: check if exists by phone
+    //         // =========================
+    //         if (!empty($request->driver_id)) {
+    //             $driver = Drivers::findOrFail($request->driver_id);
+    //         } else {
+    //             $driver = Drivers::where('phone', $request->driver_phone)->first();
+    //             if (!$driver) {
+    //                 $driver = Drivers::create([
+    //                     'full_name' => $request->driver_name,
+    //                     'phone' => $request->driver_phone,
+    //                     'company' => $request->driver_company ?? null,
+    //                     'license_number' => $request->driver_license ?? null,
+    //                 ]);
+    //             }
+    //         }
+
+    //         // =========================
+    //         // VEHICLE: check if exists by plate_number
+    //         // =========================
+    //         if (!empty($request->vehicle_id)) {
+    //             $vehicle = Vehicles::findOrFail($request->vehicle_id);
+    //         } else {
+    //             $vehicle = Vehicles::where('plate_number', $request->plate_number)->first();
+    //             if (!$vehicle) {
+    //                 $vehicle = Vehicles::create([
+    //                     'driver_id' => $driver->id,
+    //                     'plate_number' => $request->plate_number,
+    //                     'vehicle_type' => $request->vehicle_type,
+    //                     'make' => $request->make,
+    //                     'model' => $request->model,
+    //                     'color' => $request->color,
+    //                     'company' => $request->vehicle_company ?? null,
+    //                 ]);
+    //             }
+    //         }
+
+    //         // =========================
+    //         // PREVENT DOUBLE CHECK-IN
+    //         // =========================
+    //         $alreadyInside = Visit::where('vehicle_id', $vehicle->id)
+    //             ->where('status', 'checked_in')
+    //             ->first();
+
+    //         if ($alreadyInside) {
+    //             return response()->json([
+    //                 'message' => 'This vehicle is already checked in.'
+    //             ], 400);
+    //         }
+
+    //         // =========================
+    //         // CREATE VISIT
+    //         // =========================
+    //         $visit = Visit::create([
+    //             'visit_type' => 'vehicles',
+    //             'vehicle_id' => $vehicle->id,
+    //             'driver_id' => $driver->id,
+    //             'purpose' => $request->purpose ?? null,
+    //             'assigned_bay' => $request->assigned_bay ?? null,
+    //             'checked_in_at' => now(),
+    //             'status' => 'checked_in',
+    //         ]);
+
+    //         // =========================
+    //         // GOODS ITEMS
+    //         // =========================
+    //         if (!empty($request->items)) {
+    //             foreach ($request->items as $item) {
+    //                 $visit->goods_items()->create([
+    //                     'description' => $item['description'],
+    //                     'quantity' => $item['quantity'],
+    //                     'unit' => $item['unit'] ?? 'pcs',
+    //                     'reference_doc' => $item['reference_doc'] ?? null,
+    //                 ]);
+    //             }
+    //         }
+
+    //         DB::commit();
+    //     } catch (\Throwable $e) {
+    //         DB::rollBack();
+    //         throw $e;
+    //     }
+
+    //     $visit->load('vehicle', 'driver', 'goods_items');
+    //     broadcast(new RequestCreated($visit))->toOthers();
+
+    //     return response()->json([
+    //         'message' => 'Vehicle checked in successfully',
+    //         'visit' => new VisitResource($visit),
+    //     ], 201);
+    // }
+public function checkIn(Request $request)
+{
+    // =========================
+    // NORMALIZE FRONTEND VALUES
+    // (Fixes "N/A" bigint error)
+    // =========================
+    $request->merge([
+        'vehicle_id' => ($request->vehicle_id === 'N/A' || $request->vehicle_id === '') 
+            ? null 
+            : $request->vehicle_id,
+
+        'driver_id' => ($request->driver_id === 'N/A' || $request->driver_id === '') 
+            ? null 
+            : $request->driver_id,
+    ]);
+
+    // =========================
+    // VALIDATION
+    // =========================
+    $request->validate([
+        // Vehicle
+        'vehicle_id' => 'nullable|integer|exists:vehicles,id',
+        'plate_number' => 'required_without:vehicle_id|string',
+        'vehicle_type' => 'required_without:vehicle_id|string',
+        'make' => 'nullable|string',
+        'model' => 'nullable|string',
+        'color' => 'nullable|string',
+        'vehicle_company' => 'nullable|string',
+
+        // Driver
+        'driver_id' => 'nullable|integer|exists:drivers,id',
+        'driver_name' => 'required_without:driver_id|string',
+        'driver_phone' => 'required_without:driver_id|string',
+        'driver_company' => 'nullable|string',
+        'driver_license' => 'nullable|string',
+
+        // Visit
+        'purpose' => 'nullable|string',
+        'assigned_bay' => 'nullable|string',
+
+        // Goods
+        'items' => 'nullable|array',
+        'items.*.description' => 'required_with:items|string',
+        'items.*.quantity' => 'required_with:items|integer|min:1',
+        'items.*.unit' => 'nullable|string|max:50',
+        'items.*.reference_doc' => 'nullable|string|max:255',
+    ]);
+
+    DB::beginTransaction();
+
+    try {
+        // =========================
+        // DRIVER: auto-select or create
+        // =========================
+        if ($request->filled('driver_id')) {
+            $driver = Drivers::findOrFail($request->driver_id);
+        } else {
+            $driver = Drivers::where('phone', $request->driver_phone)->first();
+
+            if (!$driver) {
+                $driver = Drivers::create([
+                    'full_name' => $request->driver_name,   
+                    'phone' => $request->driver_phone,
+                    'company' => $request->driver_company,
+                    'license_number' => $request->driver_license,
+                ]);
             }
-
-            // =========================
-            // VEHICLE: check if exists by plate_number
-            // =========================
-            if (!empty($request->vehicle_id)) {
-                $vehicle = Vehicles::findOrFail($request->vehicle_id);
-            } else {
-                $vehicle = Vehicles::where('plate_number', $request->plate_number)->first();
-                if (!$vehicle) {
-                    $vehicle = Vehicles::create([
-                        'driver_id' => $driver->id,
-                        'plate_number' => $request->plate_number,
-                        'vehicle_type' => $request->vehicle_type,
-                        'make' => $request->make,
-                        'model' => $request->model,
-                        'color' => $request->color,
-                        'company' => $request->vehicle_company ?? null,
-                    ]);
-                }
-            }
-
-            // =========================
-            // PREVENT DOUBLE CHECK-IN
-            // =========================
-            $alreadyInside = Visit::where('vehicle_id', $vehicle->id)
-                ->where('status', 'checked_in')
-                ->first();
-
-            if ($alreadyInside) {
-                return response()->json([
-                    'message' => 'This vehicle is already checked in.'
-                ], 400);
-            }
-
-            // =========================
-            // CREATE VISIT
-            // =========================
-            $visit = Visit::create([
-                'visit_type' => 'vehicles',
-                'vehicle_id' => $vehicle->id,
-                'driver_id' => $driver->id,
-                'purpose' => $request->purpose ?? null,
-                'assigned_bay' => $request->assigned_bay ?? null,
-                'checked_in_at' => now(),
-                'status' => 'checked_in',
-            ]);
-
-            // =========================
-            // GOODS ITEMS
-            // =========================
-            if (!empty($request->items)) {
-                foreach ($request->items as $item) {
-                    $visit->goods_items()->create([
-                        'description' => $item['description'],
-                        'quantity' => $item['quantity'],
-                        'unit' => $item['unit'] ?? 'pcs',
-                        'reference_doc' => $item['reference_doc'] ?? null,
-                    ]);
-                }
-            }
-
-            DB::commit();
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            throw $e;
         }
 
-        $visit->load('vehicle', 'driver', 'goods_items');
-        broadcast(new RequestCreated($visit))->toOthers();
+        // =========================
+        // VEHICLE: auto-select or create
+        // =========================
+        if ($request->filled('vehicle_id')) {
+            $vehicle = Vehicles::findOrFail($request->vehicle_id);
+        } else {
+            $vehicle = Vehicles::where('plate_number', $request->plate_number)->first();
 
-        return response()->json([
-            'message' => 'Vehicle checked in successfully',
-            'visit' => new VisitResource($visit),
-        ], 201);
+            if (!$vehicle) {
+                $vehicle = Vehicles::create([
+                    'driver_id' => $driver->id,
+                    'plate_number' => $request->plate_number,
+                    'vehicle_type' => $request->vehicle_type,
+                    'make' => $request->make,
+                    'model' => $request->model,
+                    'color' => $request->color,
+                    'company' => $request->vehicle_company,
+                ]);
+            }
+        }
+
+        // =========================
+        // PREVENT DOUBLE CHECK-IN
+        // =========================
+        $alreadyInside = Visit::where('vehicle_id', $vehicle->id)
+            ->where('status', 'checked_in')
+            ->exists();
+
+        if ($alreadyInside) {
+            DB::rollBack();
+
+            return response()->json([
+                'message' => 'This vehicle is already checked in.'
+            ], 400);
+        }
+
+        // =========================
+        // CREATE VISIT
+        // =========================
+        $visit = Visit::create([
+            'visit_type' => 'vehicles',
+            'vehicle_id' => $vehicle->id,
+            'driver_id' => $driver->id,
+            'purpose' => $request->purpose,
+            'assigned_bay' => $request->assigned_bay,
+            'checked_in_at' => now(),
+            'status' => 'checked_in',
+        ]);
+
+        // =========================
+        // GOODS ITEMS
+        // =========================
+        if (!empty($request->items)) {
+            foreach ($request->items as $item) {
+                $visit->goods_items()->create([
+                    'description' => $item['description'],
+                    'quantity' => $item['quantity'],
+                    'unit' => $item['unit'] ?? 'pcs',
+                    'reference_doc' => $item['reference_doc'] ?? null,
+                ]);
+            }
+        }
+
+        DB::commit();
+    } catch (\Throwable $e) {
+        DB::rollBack();
+        throw $e;
     }
 
+    // =========================
+    // LOAD & BROADCAST
+    // =========================
+    $visit->load('vehicle', 'driver', 'goods_items');
+    broadcast(new RequestCreated($visit))->toOthers();
+
+    return response()->json([
+        'message' => 'Vehicle checked in successfully',
+        'visit' => new VisitResource($visit),
+    ], 201);
+}
     /**
      * VEHICLE CHECK-OUT
      */
@@ -206,6 +354,7 @@ class VehicleCheckController extends Controller
     {
         $visits = Visit::with(['vehicle', 'driver', 'goods_items'])
             ->where('visit_type', 'vehicles')
+            ->where('status', 'checked_in')
             ->latest()
             ->get();
 

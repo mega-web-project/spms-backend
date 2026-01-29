@@ -42,6 +42,7 @@ class CheckOutHistoryController extends Controller
                     'duration' => $duration,
                     'status' => $visit->status,
                     'has_discrepancies' => $visit->has_discrepancies,
+                    'id'=>$visit->id
                 ];
             });
 
@@ -70,13 +71,18 @@ class CheckOutHistoryController extends Controller
                     'checked_out' => $visit->checked_out_at,
                     'duration' => $duration,
                     'status' => $visit->status,
+                    'id'=>$visit->id
                 ];
             });
+
+
+            
 
         $vehicleVisits = collect($vehicleVisits);
         $visitorVisits = collect($visitorVisits);
 
         return response()->json([
+            
             'total' => $vehicleVisits->count() + $visitorVisits->count(),
             'vehicle_records' => $vehicleVisits->count(),
             'visitor_records' => $visitorVisits->count(),

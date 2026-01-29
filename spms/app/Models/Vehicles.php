@@ -5,11 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Drivers;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 
 class Vehicles extends Model
 {
     //
     use HasFactory;
+    use SoftDeletes;
     
     protected $fillable = [
         'driver_id',
