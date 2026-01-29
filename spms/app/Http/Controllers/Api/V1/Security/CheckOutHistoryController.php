@@ -66,7 +66,7 @@ class CheckOutHistoryController extends Controller
                     'visit_type' => 'visitors',
                     'name' => $visit->visitor?->full_name,
                     'company' => $visit->visitor?->company,
-                    'purpose' => $visit->purpose_of_visit,
+                    'purpose' => $visit->purpose,
                     'checked_in' => $visit->checked_in_at,
                     'checked_out' => $visit->checked_out_at,
                     'duration' => $duration,

@@ -19,8 +19,8 @@ return new class extends Migration
             $table->string('full_name');
             $table->string('license_number')->nullable();
             $table->string('phone')->unique();
-            $table->string('company')->nullable();
-            $table->string('address')->nullable();
+            // $table->string('company')->nullable();
+            $table->string('id_number')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

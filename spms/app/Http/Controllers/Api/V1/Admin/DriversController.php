@@ -22,10 +22,10 @@ class DriversController extends Controller
     {
         $validatedData = $request->validate([
             'full_name' => 'required|string',
-            'company' => 'nullable|string',
+            // 'company' => 'nullable|string',
             'phone' => 'required|string|unique:drivers,phone',
             'license_number' => 'nullable|string',
-            'address' => 'nullable|string',
+            'id_number' => 'nullable|string',
             'image'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 

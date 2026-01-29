@@ -174,7 +174,7 @@ public function checkIn(Request $request)
         'driver_id' => 'nullable|integer|exists:drivers,id',
         'driver_name' => 'required_without:driver_id|string',
         'driver_phone' => 'required_without:driver_id|string',
-        'driver_company' => 'nullable|string',
+        // 'driver_company' => 'nullable|string',
         'driver_license' => 'nullable|string',
 
         // Visit
@@ -204,7 +204,7 @@ public function checkIn(Request $request)
                 $driver = Drivers::create([
                     'full_name' => $request->driver_name,   
                     'phone' => $request->driver_phone,
-                    'company' => $request->driver_company,
+                    // 'company' => $request->driver_company,
                     'license_number' => $request->driver_license,
                 ]);
             }

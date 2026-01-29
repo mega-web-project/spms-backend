@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('visitors', function (Blueprint $table) {
             $table->id();
             $table->string('full_name');
-            $table->string('ID_number')->unique();
+            $table->string('ID_number')->nullable()->unique();
             $table->string('phone_number');
             $table->string('company')->nullable();
             // $table->string('purpose_of_visit');

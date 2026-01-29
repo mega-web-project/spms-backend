@@ -17,8 +17,8 @@ class Drivers extends Model
         'full_name',
         'license_number',
         'phone',
-        'company',
-        'address',
+        // 'company',
+        'id_number',
     ];
 
     // IMPORTANT: only append image_url, NOT image

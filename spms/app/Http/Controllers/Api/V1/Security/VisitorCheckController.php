@@ -18,7 +18,7 @@ public function checkIn(Request $request)
     $request->validate([
         'visitor_id' => 'nullable|exists:visitors,id',
         'full_name' => 'required|string|max:255',
-        'ID_number' => 'required|string|max:50',
+        'ID_number' => 'nullable|string|max:50',
         'phone_number' => 'required|string|max:20',
         'company' => 'nullable|string|max:255',
         'purpose' => 'required|string|max:255',
