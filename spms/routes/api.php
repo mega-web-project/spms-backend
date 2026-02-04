@@ -45,13 +45,13 @@ Route::prefix('v1/security')->middleware('auth:sanctum')->group(function () {
     Route::prefix('vehicles')->group(function () {
         Route::post('/check-in', [VehicleCheckController::class, 'checkIn']);
         Route::post('/check-out/{visitId}', [VehicleCheckController::class, 'checkOut']);
-        Route::get('/getchecked', [VehicleCheckController::class, 'getCheckedInVehicles']);
+        // Route::get('/getchecked', [VehicleCheckController::class, 'getCheckedInVehicles']);
         Route::post('/', [VehiclesController::class, 'store']);
         Route::get('/', [VehiclesController::class, 'index']);
+        Route::get('/checker', [VehicleCheckController::class, 'getCheckedInVehicles']);
         Route::get('/{id}', [VehiclesController::class, 'show']);
         Route::put('/{id}', [VehiclesController::class, 'update']);
         Route::delete('/{id}', [VehiclesController::class, 'destroy']);
-        Route::get('/checker', [VehicleCheckController::class, 'getCheckedInVehicles']);
         Route::get('/get/vehicles', [VehicleCheckController::class, 'getAllCheckinVehicles']);
     });
     Route::get('/check-out/history', [CheckOutHistoryController::class, 'history']);

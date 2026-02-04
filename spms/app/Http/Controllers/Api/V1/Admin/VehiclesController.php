@@ -52,7 +52,7 @@ class VehiclesController extends Controller
     //function to show a vehicle
     public function show($id)
     {
-        $vehicle = Vehicles::findORFail($id);
+        $vehicle = Vehicles::findOrFail($id);
         return response()->json($vehicle, 200);
     }
 
