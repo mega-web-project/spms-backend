@@ -17,6 +17,7 @@ class VisitResource extends JsonResource
             'checked_out_at' => $this->checked_out_at,
             'vehicle' => $this->whenLoaded('vehicle'),
             'driver' => $this->whenLoaded('driver'),
+            'goods_items' => GoodsItemResource::collection($this->whenLoaded('goods_items')),
 
             // visitor
             'visitor_id' => $this->when(
@@ -38,6 +39,18 @@ class VisitResource extends JsonResource
             $this->visit_type === 'vehicles',
             $this->goods_verified
         ),
+        'weight_checked' => $this->when(
+            $this->visit_type === 'vehicles',
+            $this->weight_checked
+        ),
+        'photo_documented' => $this->when(
+            $this->visit_type === 'vehicles',
+            $this->photo_documented
+        ),
+        'notes' => $this->when(
+            $this->visit_type === 'vehicles',
+            $this->notes
+        ),
 
             'driver_id' => $this->when(
             $this->visit_type === 'vehicles',
@@ -52,4 +65,3 @@ class VisitResource extends JsonResource
         ];
     }
 }
-
