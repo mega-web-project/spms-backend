@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Api\V1\Admin;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-
 use App\Models\Drivers;
+use Illuminate\Http\Request;
+use App\Events\RequestCreated;
+use App\Http\Controllers\Controller;
+
+
 
 class DriversController extends Controller
 {
@@ -25,6 +27,7 @@ class DriversController extends Controller
             // 'company' => 'nullable|string',
             'phone' => 'required|string|unique:drivers,phone',
             'license_number' => 'nullable|string',
+
             'id_number' => 'nullable|string',
             'image'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
@@ -50,16 +53,17 @@ class DriversController extends Controller
     {
         $driver = Drivers::findOrFail($id);
 
-        $validatedData = $request->validate([
-            'full_name' => 'sometimes|string',
-            'company' => 'nullable|string',
-            'phone' => 'sometimes|string|unique:drivers,phone,' . $id,
-            'license_number' => 'nullable|string,' . $id,
-            'address' => 'nullable|string',
+       $validatedData = $request->validate([
+        'full_name' => 'sometimes|string',
+        'phone' => 'sometimes|string|unique:drivers,phone,' . $id,
+        'license_number' => 'nullable|string',
+        'id_number' => 'nullable|string',
+        'image'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048'
         ]);
 
         $driver->update($validatedData);
-        broadcast(new RequestCreated($driver))->toOthers();
+      
+
         return response()->json($driver, 200);
     }
 
