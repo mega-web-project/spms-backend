@@ -31,7 +31,6 @@ class Drivers extends Model
     if (!$this->image) {
         return null; // or return default avatar URL if you want
     }
-
     // Remove any leading slashes from stored path
     $path = ltrim($this->image, '/');
 
@@ -40,7 +39,7 @@ class Drivers extends Model
 }
 
 public function vehicles(){
-    return $this->hasMany(Vehicle::class, 'driver_id');
+    return $this->hasMany(Vehicles::class, 'driver_id');
 }
 
 public function visits(){

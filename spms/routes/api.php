@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\V1\Security\GoodsTrackingController;
 use App\Http\Controllers\Api\V1\Security\VisitorCheckController;
 use App\Http\Controllers\Api\V1\Security\VehicleCheckController;
 use App\Http\Controllers\Api\V1\Security\CheckOutHistoryController;
+use App\Http\Controllers\Api\V1\Security\AlertsController;
 
 Route::prefix('v1/auth')->middleware('guest:sanctum')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
@@ -71,6 +72,12 @@ Route::prefix('v1/security')->middleware('auth:sanctum')->group(function () {
 
     Route::prefix('reports')->controller(ReportController::class)->group(function () {
         Route::get('/statistics', 'getStatistics');
+    });
+
+    Route::prefix('alerts')->group(function () {
+        Route::get('/', [AlertsController::class, 'index']);
+        Route::post('/', [AlertsController::class, 'store']);
+        Route::patch('/{id}/resolve', [AlertsController::class, 'resolve']);
     });
 
     Route::get('goods', [GoodsTrackingController::class, 'index']);

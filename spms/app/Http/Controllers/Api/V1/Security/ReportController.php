@@ -10,6 +10,7 @@ use App\Models\Visitors;
 use App\Events\RequestCreated;
 use App\Models\GoodsItem;
 use App\Models\Visit;
+use App\Models\Alert;
 //use App\Models\Alert;
 
 class ReportController extends Controller
@@ -36,6 +37,7 @@ class ReportController extends Controller
         ->count();
         //$totalAlerts = Alert::where('created_at', '>=', $startDate)->count();
         $totalCheckouts = Visit::where('checked_out_at', '>=', $startDate)->count();
+        $activeAlerts = Alert::where('resolved', false)->count();
 
         return response()->json([
             'VehiclesInPeriod' => $totalVehiclesOnsite ,
@@ -43,7 +45,8 @@ class ReportController extends Controller
             'TotalGoodsItems' => $totalGoodsItems,
             'PendingCheckouts' => $pendingCheckouts,
             //'total_alerts' => $totalAlerts
-            'TotalCheckouts' => $totalCheckouts
+            'TotalCheckouts' => $totalCheckouts,
+            'ActiveAlerts' => $activeAlerts
 
         ]);
     }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Vehicles;
 use App\Models\Drivers;
 use App\Models\Visit;
+use App\Models\Alert;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Events\RequestCreated;
@@ -320,6 +321,25 @@ public function checkIn(Request $request)
             'checked_out_at' => now(),
             'status' => 'checked_out',
         ]);
+
+        if (!empty($validated['has_discrepancies'])) {
+            $visit->loadMissing('vehicle');
+            $entityType = $visit->vehicle_id ? 'vehicle' : 'visit';
+            $entityId = $visit->vehicle_id ?? $visit->id;
+            $plate = optional($visit->vehicle)->plate_number;
+            $message = $plate
+                ? "Goods discrepancy reported for vehicle {$plate}"
+                : "Goods discrepancy reported for visit {$visit->id}";
+
+            Alert::createIfNotExists([
+                'type' => 'discrepancy',
+                'severity' => 'medium',
+                'message' => $message,
+                'entity_type' => $entityType,
+                'entity_id' => $entityId,
+                'resolved' => false,
+            ]);
+        }
 
         $visit->load('vehicle', 'driver', 'goods_items');
         broadcast(new RequestCreated($visit))->toOthers();

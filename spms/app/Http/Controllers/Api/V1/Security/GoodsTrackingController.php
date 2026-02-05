@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Visit;
 use App\Models\GoodsItem;
+use App\Models\Alert;
 use App\Events\RequestCreated;
 use App\Http\Resources\VisitResource;
 use App\Http\Resources\GoodsItemResource;
@@ -100,6 +101,25 @@ class GoodsTrackingController extends Controller
             'has_discrepancies' => $validated['has_discrepancies'] ?? false,
             'notes' => $validated['notes'] ?? null,
         ]);
+
+        if (!empty($validated['has_discrepancies'])) {
+            $visit->loadMissing('vehicle');
+            $entityType = $visit->vehicle_id ? 'vehicle' : 'visit';
+            $entityId = $visit->vehicle_id ?? $visit->id;
+            $plate = optional($visit->vehicle)->plate_number;
+            $message = $plate
+                ? "Goods discrepancy reported for vehicle {$plate}"
+                : "Goods discrepancy reported for visit {$visit->id}";
+
+            Alert::createIfNotExists([
+                'type' => 'discrepancy',
+                'severity' => 'medium',
+                'message' => $message,
+                'entity_type' => $entityType,
+                'entity_id' => $entityId,
+                'resolved' => false,
+            ]);
+        }
 
         $visit->load('goods_items', 'vehicle', 'driver', 'visitor');
         broadcast(new RequestCreated($visit))->toOthers();

@@ -61,6 +61,11 @@ class DriversController extends Controller
         'image'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048'
         ]);
 
+        if ($request->hasFile('image')) {
+                $path = $request->file('image')->store('drivers', 'public');
+                 $validatedData['image'] = ltrim($path, '/');
+            }
+
         $driver->update($validatedData);
       
 
