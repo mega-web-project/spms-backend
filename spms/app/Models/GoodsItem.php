@@ -12,6 +12,12 @@ class GoodsItem extends Model
         'quantity',
         'unit',
         'reference_doc',
+        'has_discrepancy',
+        'discrepancy_note',
+    ];
+
+    protected $casts = [
+        'has_discrepancy' => 'boolean',
     ];
 
     public function visit()

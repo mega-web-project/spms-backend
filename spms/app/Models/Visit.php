@@ -20,6 +20,7 @@ class Visit extends Model
         'person_to_visit',
         'department',
         'additional_notes',
+        'members',
 
         //common
         'purpose',
@@ -38,6 +39,7 @@ class Visit extends Model
     protected $casts=[
         'checked_in_at' => 'datetime',
         'checked_out_at' => 'datetime',
+        'members' => 'array',
     ];
 
     public function visitor()

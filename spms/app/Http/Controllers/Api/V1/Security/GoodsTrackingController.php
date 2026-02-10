@@ -88,30 +88,66 @@ class GoodsTrackingController extends Controller
             'goods_verified' => 'required|boolean',
             'weight_checked' => 'required|boolean',
             'photo_documented' => 'required|boolean',
-            'has_discrepancies' => 'nullable|boolean',
             'notes' => 'nullable|string',
+            'items' => 'nullable|array',
+            'items.*.id' => 'required_with:items|exists:goods_items,id',
+            'items.*.has_discrepancy' => 'required_with:items|boolean',
+            'items.*.discrepancy_note' => 'nullable|string',
         ]);
 
         $visit = Visit::findOrFail($validated['id']);
 
-        $visit->update([
-            'goods_verified' => $validated['goods_verified'],
-            'weight_checked' => $validated['weight_checked'],
-            'photo_documented' => $validated['photo_documented'],
-            'has_discrepancies' => $validated['has_discrepancies'] ?? false,
-            'notes' => $validated['notes'] ?? null,
-        ]);
+        $items = collect($validated['items'] ?? []);
 
-        if (!empty($validated['has_discrepancies'])) {
+        if ($items->isNotEmpty()) {
+            $itemIds = $items->pluck('id')->unique()->values();
+            $validItemIds = $visit->goods_items()
+                ->whereIn('id', $itemIds)
+                ->pluck('id');
+
+            if ($validItemIds->count() !== $itemIds->count()) {
+                return response()->json([
+                    'message' => 'One or more items do not belong to this visit.',
+                ], 422);
+            }
+        }
+
+        $discrepancyCount = 0;
+        $hasDiscrepancies = false;
+
+        DB::transaction(function () use ($visit, $items, $validated, &$discrepancyCount, &$hasDiscrepancies) {
+            if ($items->isNotEmpty()) {
+                foreach ($items as $item) {
+                    $note = $item['has_discrepancy'] ? ($item['discrepancy_note'] ?? null) : null;
+
+                    GoodsItem::where('id', $item['id'])->update([
+                        'has_discrepancy' => $item['has_discrepancy'],
+                        'discrepancy_note' => $note,
+                    ]);
+                }
+            }
+
+            $discrepancyCount = $visit->goods_items()
+                ->where('has_discrepancy', true)
+                ->count();
+            $hasDiscrepancies = $discrepancyCount > 0;
+
+            $visit->update([
+                'goods_verified' => $validated['goods_verified'],
+                'weight_checked' => $validated['weight_checked'],
+                'photo_documented' => $validated['photo_documented'],
+                'has_discrepancies' => $hasDiscrepancies,
+                'notes' => $validated['notes'] ?? null,
+            ]);
+        });
+
+        if ($hasDiscrepancies) {
             $visit->loadMissing('vehicle');
             $entityType = $visit->vehicle_id ? 'vehicle' : 'visit';
             $entityId = $visit->vehicle_id ?? $visit->id;
-            $plate = optional($visit->vehicle)->plate_number;
-            $message = $plate
-                ? "Goods discrepancy reported for vehicle {$plate}"
-                : "Goods discrepancy reported for visit {$visit->id}";
+            $message = $this->buildDiscrepancyMessage($visit, $discrepancyCount);
 
-            Alert::createIfNotExists([
+            $alert = Alert::createIfNotExists([
                 'type' => 'discrepancy',
                 'severity' => 'medium',
                 'message' => $message,
@@ -119,6 +155,10 @@ class GoodsTrackingController extends Controller
                 'entity_id' => $entityId,
                 'resolved' => false,
             ]);
+
+            if ($alert->message !== $message) {
+                $alert->update(['message' => $message]);
+            }
         }
 
         $visit->load('goods_items', 'vehicle', 'driver', 'visitor');
@@ -128,6 +168,16 @@ class GoodsTrackingController extends Controller
             'message' => 'Goods verification updated',
             'visit' => new VisitResource($visit),
         ]);
+    }
+
+    private function buildDiscrepancyMessage(Visit $visit, int $count): string
+    {
+        $plate = optional($visit->vehicle)->plate_number;
+        $itemLabel = $count === 1 ? 'item' : 'items';
+
+        return $plate
+            ? "Goods discrepancy reported for vehicle {$plate} ({$count} {$itemLabel})"
+            : "Goods discrepancy reported for visit {$visit->id} ({$count} {$itemLabel})";
     }
 
     // Delete a single goods item

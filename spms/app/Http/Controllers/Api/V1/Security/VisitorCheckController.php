@@ -25,6 +25,10 @@ public function checkIn(Request $request)
         'person_to_visit' => 'required|string|max:255',
         'department' => 'nullable|string|max:255',
         'additional_notes' => 'nullable|string',
+        'members' => 'nullable|array',
+        'members.*.name' => 'required_with:members|string|max:255',
+        'members.*.phone_number' => 'required_with:members|string|max:20',
+        'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
     ]);
 
     DB::beginTransaction();
@@ -33,6 +37,12 @@ public function checkIn(Request $request)
         // =========================
         // VISITOR: check if exists by ID_number
         // =========================
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('visitors', 'public');
+            $imagePath = ltrim($path, '/');
+        }
+
         if (!empty($request->visitor_id)) {
             $visitor = Visitors::findOrFail($request->visitor_id);
         } else {
@@ -45,6 +55,8 @@ public function checkIn(Request $request)
                     'ID_number' => $request->ID_number,
                     'phone_number' => $request->phone_number,
                     'company' => $request->company ?? null,
+                    'members' => $request->members ?? null,
+                    'image' => $imagePath,
                 ]);
             }
         }
@@ -63,6 +75,28 @@ public function checkIn(Request $request)
         }
 
         // =========================
+        // SNAPSHOT MEMBERS + UPDATE VISITOR IF PROVIDED
+        // =========================
+        $membersSnapshot = null;
+        if ($request->has('members')) {
+            $membersSnapshot = $request->members;
+            if ($visitor) {
+                $visitor->members = $request->members;
+                if ($imagePath) {
+                    $visitor->image = $imagePath;
+                }
+                $visitor->save();
+            }
+        } elseif ($visitor && !empty($visitor->members)) {
+            $membersSnapshot = $visitor->members;
+        }
+
+        if ($visitor && $imagePath && !$request->has('members')) {
+            $visitor->image = $imagePath;
+            $visitor->save();
+        }
+
+        // =========================
         // CREATE VISIT
         // =========================
         $visit = Visit::create([
@@ -72,6 +106,7 @@ public function checkIn(Request $request)
             'person_to_visit' => $request->person_to_visit,
             'department' => $request->department ?? null,
             'additional_notes' => $request->additional_notes ?? null,
+            'members' => $membersSnapshot,
             'checked_in_at' => now(),
             'status' => 'checked_in',
         ]);
@@ -141,12 +176,14 @@ public function checkIn(Request $request)
             'person_to_visit' => $visit->person_to_visit,
             'checked_in_at' => $visit->checked_in_at,
             'status' => $visit->status,
+            'members' => $visit->members,
             'visitor' => [
                 'id' => $visit->visitor->id,
                 'full_name' => $visit->visitor->full_name,
                 'ID_number' => $visit->visitor->ID_number,
                 'phone_number' => $visit->visitor->phone_number,
                 'company' => $visit->visitor->company,
+                'image_url' => $visit->visitor->image_url,
             ]
         ];
     });
@@ -158,4 +195,3 @@ public function checkIn(Request $request)
 }
 
 }
-

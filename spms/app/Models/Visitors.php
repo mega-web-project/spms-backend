@@ -12,14 +12,26 @@ class Visitors extends Model
         'ID_number',
         'phone_number',
         'company',
-        // 'purpose_of_visit',
-        // 'person_to_visit',
-        // 'department',
-        // 'additional_notes',
-        // 'status',
-        // 'check_in_time',
-        // 'check_out_time'
+        'members',
+        'image',
     ];
 
+    protected $appends = ['image_url'];
+
+    protected $hidden = ['image'];
+
+    protected $casts = [
+        'members' => 'array',
+    ];
+
+    public function getImageUrlAttribute()
+    {
+        if (!$this->image) {
+            return null;
+        }
+
+        $path = ltrim($this->image, '/');
+        return asset("storage/{$path}");
+    }
 
 }

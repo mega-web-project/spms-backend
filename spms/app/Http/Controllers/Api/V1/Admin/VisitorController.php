@@ -24,7 +24,16 @@ class VisitorController extends Controller
             'ID_number' => 'required|string|unique:visitors,ID_number',
             'phone_number' => 'required|string|max:20',
             'company' => 'nullable|string|max:255',
+            'members' => 'nullable|array',
+            'members.*.name' => 'required_with:members|string|max:255',
+            'members.*.phone_number' => 'required_with:members|string|max:20',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
+
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('visitors', 'public');
+            $validated['image'] = ltrim($path, '/');
+        }
 
         $visitor = Visitors::create($validated);
 

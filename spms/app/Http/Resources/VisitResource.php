@@ -18,6 +18,10 @@ class VisitResource extends JsonResource
             'vehicle' => $this->whenLoaded('vehicle'),
             'driver' => $this->whenLoaded('driver'),
             'goods_items' => GoodsItemResource::collection($this->whenLoaded('goods_items')),
+            'members' => $this->when(
+                $this->visit_type === 'visitors',
+                $this->members
+            ),
 
             // visitor
             'visitor_id' => $this->when(

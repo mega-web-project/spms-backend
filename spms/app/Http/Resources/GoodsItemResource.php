@@ -16,6 +16,8 @@ class GoodsItemResource extends JsonResource
             'quantity' => $this->quantity,
             'unit' => $this->unit,
             'reference_doc' => $this->reference_doc,
+            'has_discrepancy' => $this->has_discrepancy,
+            'discrepancy_note' => $this->discrepancy_note,
             'created_at' => optional($this->created_at)->toDateTimeString(),
             'updated_at' => optional($this->updated_at)->toDateTimeString(),
         ];

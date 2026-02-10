@@ -71,6 +71,8 @@ class CheckOutHistoryController extends Controller
                     'checked_out' => $visit->checked_out_at,
                     'duration' => $duration,
                     'status' => $visit->status,
+                    'members' => $visit->members,
+                    'image_url' => $visit->visitor?->image_url,
                     'id'=>$visit->id
                 ];
             });
